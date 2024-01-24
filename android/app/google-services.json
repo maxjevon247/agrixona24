@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "790129469615",
+    "project_id": "agrixona24",
+    "storage_bucket": "agrixona24.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:790129469615:android:d016e5c049e0e253c00c5a",
+        "android_client_info": {
+          "package_name": "com.agrinodi.agrixona24"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD4ES2GYE_s_t5TI9YGKIQb02aBHpeNbtU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:790129469615:android:b51ece0eb829c87dc00c5a",
+        "android_client_info": {
+          "package_name": "com.agrixona"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD4ES2GYE_s_t5TI9YGKIQb02aBHpeNbtU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
