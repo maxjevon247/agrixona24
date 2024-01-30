@@ -28,6 +28,7 @@ dependencies:
   video_compress: ^3.1.2
   flutter_image_compress: ^2.1.0
   logger: ^2.0.2+1
+  firebase_core: ^2.24.2
 
 dev_dependencies:
   flutter_test:

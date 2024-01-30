@@ -67,6 +67,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '790129469615',
     projectId: 'agrixona24',
     storageBucket: 'agrixona24.appspot.com',
+    androidClientId: '790129469615-ehgp29rjad88lmf77lphpe1dme0mti60.apps.googleusercontent.com',
     iosBundleId: 'com.agrinodi.agrixona24',
   );
 
@@ -76,6 +77,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '790129469615',
     projectId: 'agrixona24',
     storageBucket: 'agrixona24.appspot.com',
+    androidClientId: '790129469615-ehgp29rjad88lmf77lphpe1dme0mti60.apps.googleusercontent.com',
     iosBundleId: 'com.agrinodi.agrixona24.RunnerTests',
   );
 }

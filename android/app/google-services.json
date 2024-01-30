@@ -12,7 +12,12 @@
           "package_name": "com.agrinodi.agrixona24"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "790129469615-bhao1ehuv1hjfhim4miv6bk1gs11i28e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyD4ES2GYE_s_t5TI9YGKIQb02aBHpeNbtU"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "790129469615-bhao1ehuv1hjfhim4miv6bk1gs11i28e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     },
@@ -31,7 +41,20 @@
           "package_name": "com.agrixona"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "790129469615-ehgp29rjad88lmf77lphpe1dme0mti60.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.agrixona",
+            "certificate_hash": "424e62f4a89d77338ab6cc02353848bf0e989e1b"
+          }
+        },
+        {
+          "client_id": "790129469615-bhao1ehuv1hjfhim4miv6bk1gs11i28e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyD4ES2GYE_s_t5TI9YGKIQb02aBHpeNbtU"
@@ -39,7 +62,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "790129469615-bhao1ehuv1hjfhim4miv6bk1gs11i28e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

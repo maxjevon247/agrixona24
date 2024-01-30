@@ -66,6 +66,9 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   /// selected language, default is English.
   LanguageOption language = _languageOptions[1];
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   /// Current auth mode, default is [AuthMode.login].
   AuthMode currentMode = AuthMode.login;
@@ -75,11 +78,30 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return AnimatedLogin(
-      onLogin: (LoginData data) async =>
-          _authOperation(LoginFunctions(context).onLogin(data)),
-      onSignup: (SignUpData data) async =>
-          _authOperation(LoginFunctions(context).onSignup(data)),
-      onForgotPassword: _onForgotPassword,
+      onLogin: (LoginData data) async {
+        try {
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+            email: data.email!,
+            password: data.password!,
+          );
+          return 'Login successful';
+        } catch (e) {
+          return 'Error logging in: $e';
+        }
+      },
+      onForgotPassword: (String email) async {
+        try {
+          await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+          return 'Password reset email sent to $email';
+        } catch (e) {
+          return 'Error sending password reset email: $e';
+        }
+      },
+      // signUpMode: SignUpModes.withEmail,
+      //     _authOperation(LoginFunctions(context).onLogin(data)),
+      // onSignup: (SignUpData data) async =>
+      //     _authOperation(LoginFunctions(context).onSignup(data)),
+      // onForgotPassword: _onForgotPassword,
       logo: Image.asset('assets/images/agrixona_icon.png'),
       // backgroundImage: 'images/background_image.jpg',
       signUpMode: SignUpModes.both,
@@ -188,10 +210,10 @@ class _LoginScreenState extends State<LoginScreen> {
         nameHint: _username,
         login: _login,
         signUp: _signup,
-        // signupEmailHint: 'Signup Email',
-        // loginEmailHint: 'Login Email',
-        // signupPasswordHint: 'Signup Password',
-        // loginPasswordHint: 'Login Password',
+        signupEmailHint: 'Signup Email',
+        loginEmailHint: 'Login Email',
+        signupPasswordHint: 'Signup Password',
+        loginPasswordHint: 'Login Password',
       );
 
   /// You can adjust the texts in the screen according to the current language
@@ -327,3 +349,182 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
     );
   }
 }
+
+// import 'package:animated_login/animated_login.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:flutter/material.dart';
+//
+// class MyApp extends StatelessWidget {
+//   const MyApp({Key? key}) : super(key: key);
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'Login',
+//       theme: ThemeData(
+//         primaryColor: Colors.green.shade900,
+//         colorScheme: const ColorScheme.light(primary: Colors.blue),
+//         textTheme: Theme.of(context).textTheme.apply(
+//               decorationColor: Colors.blue,
+//             ),
+//         inputDecorationTheme: const InputDecorationTheme(
+//           prefixIconColor: Colors.black54,
+//           suffixIconColor: Colors.black54,
+//           iconColor: Colors.black54,
+//           labelStyle: TextStyle(color: Colors.black54),
+//           hintStyle: TextStyle(color: Colors.black54),
+//         ),
+//       ),
+//       debugShowCheckedModeBanner: false,
+//       initialRoute: '/login',
+//       routes: {
+//         '/login': (BuildContext context) => const LoginScreen(),
+//         '/signup': (BuildContext context) => const SignUpScreen(),
+//         '/forgotPass': (BuildContext context) => const ForgotPasswordScreen(),
+//       },
+//     );
+//   }
+// }
+//
+// class LoginScreen extends StatelessWidget {
+//   const LoginScreen({Key? key}) : super(key: key);
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return AnimatedLogin(
+//       onLogin: (LoginData data) async {
+//         try {
+//           await FirebaseAuth.instance.signInWithEmailAndPassword(
+//             email: data.email!,
+//             password: data.password!,
+//           );
+//           return 'Login successful';
+//         } catch (e) {
+//           return 'Error logging in: $e';
+//         }
+//       },
+//       onForgotPassword: (String email) async {
+//         try {
+//           await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+//           return 'Password reset email sent to $email';
+//         } catch (e) {
+//           return 'Error sending password reset email: $e';
+//         }
+//       },
+//       signUpMode: SignUpModes.withEmail,
+//     );
+//   }
+// }
+//
+// class SignUpScreen extends StatelessWidget {
+//   const SignUpScreen({Key? key}) : super(key: key);
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return AnimatedLogin(
+//       onSignup: (SignUpData data) async {
+//         try {
+//           await FirebaseAuth.instance.createUserWithEmailAndPassword(
+//             email: data.email!,
+//             password: data.password!,
+//           );
+//           return 'Sign up successful';
+//         } catch (e) {
+//           return 'Error signing up: $e';
+//         }
+//       },
+//     );
+//   }
+// }
+//
+// class ForgotPasswordScreen extends StatelessWidget {
+//   const ForgotPasswordScreen({Key? key}) : super(key: key);
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('Forgot Password'),
+//       ),
+//       body: Padding(
+//         padding: const EdgeInsets.all(16.0),
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             const Text(
+//               'Forgot your password?',
+//               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+//             ),
+//             const SizedBox(height: 20),
+//             const Text(
+//               'Enter your email address below to reset your password.',
+//               textAlign: TextAlign.center,
+//               style: TextStyle(fontSize: 16),
+//             ),
+//             const SizedBox(height: 30),
+//             ForgotPasswordForm(),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+//
+// class ForgotPasswordForm extends StatefulWidget {
+//   @override
+//   _ForgotPasswordFormState createState() => _ForgotPasswordFormState();
+// }
+//
+// class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
+//   final TextEditingController _emailController = TextEditingController();
+//
+//   void _submitForm() async {
+//     String email = _emailController.text.trim();
+//
+//     try {
+//       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text('Password reset email sent to $email')),
+//       );
+//     } catch (e) {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text('Error sending password reset email')),
+//       );
+//     }
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.stretch,
+//       children: [
+//         TextFormField(
+//           controller: _emailController,
+//           decoration: const InputDecoration(
+//             labelText: 'Email',
+//             hintText: 'Enter your email',
+//           ),
+//           keyboardType: TextInputType.emailAddress,
+//           validator: (value) {
+//             if (value == null || value.isEmpty) {
+//               return 'Please enter your email';
+//             }
+//             return null;
+//           },
+//         ),
+//         const SizedBox(height: 20),
+//         ElevatedButton(
+//           onPressed: _submitForm,
+//           child: const Text('Reset Password'),
+//         ),
+//         const SizedBox(height: 10),
+//         TextButton(
+//           onPressed: () {
+//             Navigator.pop(context);
+//           },
+//           child: const Text('Back to Login'),
+//         ),
+//       ],
+//     );
+//   }
+// }

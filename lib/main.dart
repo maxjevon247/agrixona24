@@ -1,30 +1,58 @@
+// import 'account/account_new.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-import 'account.dart';
-
-// import 'account/login.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-Future<void> getWelcomeScreenData() async {
+Future<Map<String, dynamic>?> getWelcomeScreenData() async {
   final DocumentReference docRef =
       firestore.collection("welcome").doc("welcome_screen");
   final DocumentSnapshot doc = await docRef.get();
   if (doc.exists) {
-    final Map<String, dynamic>? welcomeScreenData =
-        doc.data() as Map<String, dynamic>?;
-    print("Welcome screen text: ${welcomeScreenData?['text']}");
-    print("Welcome screen image URL: ${welcomeScreenData?['imageUrl']}");
+    return doc.data() as Map<String, dynamic>?;
   } else {
     print("No such document!");
+    return null;
+  }
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: MaterialApp(
+        title: 'Agrixonia',
+        home: FutureBuilder<Map<String, dynamic>?>(
+          future: getWelcomeScreenData(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
+            } else {
+              if (snapshot.hasData) {
+                final welcomeData = snapshot.data!;
+                return WelcomeScreen(
+                  text: welcomeData['text'] ?? '',
+                  imageUrl: welcomeData['imgUrl'] ?? '',
+                );
+              } else {
+                return const Text('Error fetching data');
+              }
+            }
+          },
+        ),
+      ),
+    );
   }
 }
 
@@ -36,67 +64,24 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          Text(text),
-          Image.network(imageUrl),
-        ],
-      ),
-    );
-  }
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Agrixona',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Agrixona'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.green.shade900,
-      // appBar: AppBar(
-      //   backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      //   title: Text(widget.title),
-      // ),
+      appBar: AppBar(
+        title: Text('Welcome Screen'),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'Welcome to Agrixona',
-              style: TextStyle(fontSize: 28.0, color: Colors.white70),
+          children: [
+            Text(
+              text,
+              style: TextStyle(fontSize: 20),
             ),
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const LoginScreen())),
-              child: Text(
-                'Get Started',
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
+            const SizedBox(height: 20),
+            Image.network(
+              imageUrl,
+              width: 200,
+              height: 200,
             ),
           ],
         ),
@@ -104,3 +89,66 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+// /////////////////////
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
+//
+//   // This widget is the root of your application.
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'Agrixona',
+//       theme: ThemeData(
+//         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+//         useMaterial3: true,
+//       ),
+//       home: const MyHomePage(title: 'Agrixona'),
+//     );
+//   }
+// }
+//
+// class MyHomePage extends StatefulWidget {
+//   const MyHomePage({super.key, required this.title});
+//
+//   final String title;
+//
+//   @override
+//   State<MyHomePage> createState() => _MyHomePageState();
+// }
+//
+// class _MyHomePageState extends State<MyHomePage> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: Colors.green.shade900,
+//       // appBar: AppBar(
+//       //   backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+//       //   title: Text(widget.title),
+//       // ),
+//       body: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: <Widget>[
+//             const Text(
+//               'Welcome to Agrixona',
+//               style: TextStyle(fontSize: 28.0, color: Colors.white70),
+//             ),
+//             ElevatedButton(
+//               onPressed: () => Navigator.of(context)
+//                   .push(MaterialPageRoute(builder: (context) => LoginScreen())),
+//               style: ElevatedButton.styleFrom(
+//                 backgroundColor: Colors.green,
+//                 side: BorderSide(color: Colors.yellow, width: 2),
+//                 // textStyle: const TextStyle(
+//                 //     color: Colors.white, fontSize: 25, fontStyle: FontStyle.normal),
+//               ),
+//               child: Text('Get Started',
+//                   style: Theme.of(context).textTheme.headlineMedium),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
