@@ -1,14 +1,15 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'dart:typed_data';
-import 'package:image_picker/image_picker.dart';
-import 'package:video_player/video_player.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:image_picker/image_picker.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart' as firestore;
 import 'package:video_compress/video_compress.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:video_player/video_player.dart';
 
 class Post {
   String content;
@@ -46,6 +47,9 @@ class Message {
 }
 
 class ProfileScreen extends StatefulWidget {
+  final String uid;
+  const ProfileScreen({Key? key, required this.uid}) : super(key: key);
+
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
@@ -194,12 +198,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: CircleAvatar(
-                radius: 50,
-                backgroundImage: NetworkImage(
-                    'https://images.unsplash.com/photo-1520813792240-56fc4a3765a8?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60'),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: FutureBuilder<DocumentSnapshot>(
+                future: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(widget.uid)
+                    .get(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return Text("Error: ${snapshot.error}");
+                  }
+
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    Map<String, dynamic> data =
+                        snapshot.data!.data() as Map<String, dynamic>;
+                    String? profileImageUrl = data['profileImageUrl'];
+
+                    return CircleAvatar(
+                      radius: 50,
+                      backgroundImage: profileImageUrl != null
+                          ? NetworkImage(profileImageUrl)
+                          : null,
+                    );
+                  }
+
+                  return CircularProgressIndicator();
+                },
               ),
             ),
             ListTile(

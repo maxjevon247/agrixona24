@@ -1,4 +1,5 @@
 // import 'account/account_new.dart';
+import 'package:agrixona24/account/signup.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,8 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  debugShowCheckedModeBanner:
+  false;
   runApp(const MyApp());
 }
 
@@ -32,12 +35,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: MaterialApp(
+        color: Colors.green.shade900,
         title: 'Agrixonia',
         home: FutureBuilder<Map<String, dynamic>?>(
           future: getWelcomeScreenData(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
+              return const LinearProgressIndicator();
             } else {
               if (snapshot.hasData) {
                 final welcomeData = snapshot.data!;
@@ -46,7 +50,8 @@ class MyApp extends StatelessWidget {
                   imageUrl: welcomeData['imgUrl'] ?? '',
                 );
               } else {
-                return const Text('Error fetching data');
+                return const Center(
+                    child: Text('Please check your network connection'));
               }
             }
           },
@@ -66,22 +71,36 @@ class WelcomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.green.shade900,
-      appBar: AppBar(
-        title: Text('Welcome Screen'),
-      ),
+      // appBar: AppBar(
+      //   title: Text('Welcome Screen'),
+      // ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               text,
-              style: TextStyle(fontSize: 20),
+              style: const TextStyle(fontSize: 20),
             ),
             const SizedBox(height: 20),
             Image.network(
               imageUrl,
               width: 200,
               height: 200,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).push(
+                  // MaterialPageRoute(builder: (context) => const LoginScreen())),
+                  MaterialPageRoute(builder: (context) => LoginPage())),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                side: const BorderSide(color: Colors.yellow, width: 2),
+                // textStyle: const TextStyle(
+                //     color: Colors.white, fontSize: 25, fontStyle: FontStyle.normal),
+              ),
+              child: Text('Get Started',
+                  style: Theme.of(context).textTheme.headlineMedium),
             ),
           ],
         ),
