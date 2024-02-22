@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Marketplace extends StatefulWidget {
@@ -8,95 +9,73 @@ class Marketplace extends StatefulWidget {
 }
 
 class _MarketplaceState extends State<Marketplace> {
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
-// Define the User model
-class User {
-  String email;
-  String username;
-  DateTime dateOfBirth;
-  String profession;
-  String specialization;
-
-  User({
-    required this.email,
-    required this.username,
-    required this.dateOfBirth,
-    required this.profession,
-    required this.specialization,
-  });
-}
-
-// Multi-step registration screen widget
-class RegistrationScreen extends StatefulWidget {
-  @override
-  _RegistrationScreenState createState() => _RegistrationScreenState();
-}
-
-class _RegistrationScreenState extends State<RegistrationScreen> {
-  int _currentStep = 0;
-  late User _user;
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  void _registerUser() {
-    // Register user with Firebase Authentication
-    // Save additional user data to Firestore or Firebase Realtime Database
-  }
+  final CollectionReference _products = FirebaseFirestore.instance.collection('products');
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Registration'),
+        title: const Text('Marketplace'),
       ),
-      body: Stepper(
-        currentStep: _currentStep,
-        onStepContinue: () {
-          if (_formKey.currentState!.validate()) {
-            setState(() {
-              _currentStep < 3 ? _currentStep += 1 : _registerUser();
-            });
+      body: StreamBuilder<QuerySnapshot>(
+        stream: _products.snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return const Center(
+              child: Text('Something went wrong'),
+            );
           }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          final products = snapshot.data!.docs.map((doc) {
+            final data = doc.data()! as Map<String, dynamic>;
+            return Product(
+              id: doc.id,
+              name: data['name'],
+              description: data['description'],
+              price: data['price'],
+              imageUrl: data['imageUrl'],
+            );
+          }).toList();
+
+          return ListView.builder(
+            itemCount: products.length,
+            itemBuilder: (BuildContext context, int index) {
+              final product = products[index];
+              return ListTile(
+                leading: Image.network(product.imageUrl),
+                title: Text(product.name),
+                subtitle: Text('${product.price}'),
+                trailing: const Icon(Icons.favorite_border),
+                onTap: () {
+                  // Navigate to product details page
+                },
+              );
+            },
+          );
         },
-        steps: [
-          Step(
-            title: Text('Step 1'),
-            content: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  TextFormField(
-                    decoration: InputDecoration(labelText: 'Email'),
-                    validator: (value) {
-                      // Validate email
-                    },
-                    onChanged: (value) {
-                      // Update email in user object
-                    },
-                  ),
-                  // Other form fields for step 1
-                ],
-              ),
-            ),
-          ),
-          Step(
-            title: Text('Step 2'),
-            content: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  // Form fields for step 2
-                ],
-              ),
-            ),
-          ),
-          // Additional steps for username, date of birth, profession, specialization, etc.
-        ],
       ),
     );
   }
+}
+
+class Product {
+  final String id;
+  final String name;
+  final String description;
+  final double price;
+  final String imageUrl;
+
+  Product({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.price,
+    required this.imageUrl,
+  });
 }

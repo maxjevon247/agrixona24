@@ -1,4 +1,5 @@
 import 'package:agrixona24/account/user_signup.dart';
+import 'package:agrixona24/dashboard/dashboard.dart';
 import 'package:agrixona24/dashboard/profile3.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -247,8 +248,15 @@ class _LoginPageState extends State<LoginPage> {
                             // Navigate to dashboard upon successful login
                             // Navigator.pushReplacementNamed(context, '/profile');
                             //Navigator.pushReplacementNamed(context, '/dashboard');
-                            Navigator.pushReplacement(context,
-                                ProfileScreen(uid: uid) as Route<Object?>);
+                            // Navigator.pushReplacement(context,
+                            //     ProfileScreen(uid: uid) as Route<Object?>);
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (BuildCcontext) =>
+                                    const Dashboard(title: 'Agrixona'),
+                              ),
+                            );
                           } //else {
                           //   Navigator.pushReplacement(
                           //       context, const Marketplace() as Route<Object?>);

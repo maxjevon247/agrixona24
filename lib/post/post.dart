@@ -1,3 +1,4 @@
+import 'package:agrixona24/post/comments.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -140,7 +141,51 @@ class _MessageWidgetState extends State<MessageWidget> {
               IconButton(
                 icon: const Icon(Icons.comment),
                 onPressed: () {
-                  // Show the comment screen
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return CommentScreen(message: widget.message);
+                  },),);
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () {
+                  final controller =
+                      TextEditingController(text: widget.message.content);
+
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text('Edit Message'),
+                        content: TextField(
+                          controller: controller,
+                          onChanged: (value) {
+                            widget.message.content = value;
+                          },
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              await FirebaseFirestore.instance
+                                  .collection('chatRooms')
+                                  .doc(widget.message.roomId)
+                                  .collection('messages')
+                                  .doc(widget.message.id)
+                                  .update(widget.message.toMap());
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Save'),
+                          ),
+                        ],
+                      );
+                    },
+                  ).then((value) => controller.dispose());
                 },
               ),
               IconButton(
@@ -443,111 +488,3 @@ class FirestoreService {
     });
   }
 }
-
-// class ChatScreen2 extends StatefulWidget {
-//   final String conversationId;
-
-//   ChatScreen2(this.conversationId);
-
-//   @override
-//   _ChatScreen2State createState() => _ChatScreen2State();
-// }
-
-// class _ChatScreen2State extends State<ChatScreen2> {
-//   final _messageController = TextEditingController();
-//   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-//   late final FirestoreService _firestoreService;
-
-//   List<Message> _messages = [];
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _firestoreService = FirestoreService(_firestore);
-//     _firestoreService.getMessages(widget.conversationId).listen((messages) {
-//     setState(() {
-//       _messages = messages;
-//     });
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Chat'),
-//       ),
-//       body: Column(
-//         children: [
-//           Expanded(
-//             child: ListView.builder(
-//               itemCount: _messages.length,
-//               itemBuilder: (context, index) {
-//                 final message = _messages[index];
-//                 return ListTile(
-//                   title: Text(message.content),
-//                   subtitle: Text('${message.senderId} - ${message.timestamp}'),
-//                   trailing: Row(
-//                     mainAxisSize: MainAxisSize.min,
-//                     children: [
-//                       IconButton(
-//                         icon: const Icon(Icons.thumb_up),
-//                         onPressed: () {
-//                           _firestoreService.likeMessage(message.id, 'currentUser');
-//                         },
-//                       ),
-//                       IconButton(
-//                         icon: const Icon(Icons.comment),
-//                         onPressed: () {
-//                           _firestoreService.commentOnMessage(message.id, 'currentUser', 'comment text');
-//                         },
-//                       ),
-//                       IconButton(
-//                         icon: const Icon(Icons.share),
-//                         onPressed: () {
-//                           _firestoreService.shareMessage(message.id, 'currentUser');
-//                         },
-//                       ),
-//                     ],
-//                   ),
-//                 );
-//               },
-//             ),
-//           ),
-//           Padding(
-//             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-//             child: Row(
-//               children: [
-//                 Expanded(
-//                   child: TextField(
-//                     controller: _messageController,
-//                     decoration: const InputDecoration(
-//                       hintText: 'Type a message',
-//                       border: OutlineInputBorder(),
-//                     ),
-//                   ),
-//                 ),
-//                 IconButton(
-//                   icon: const Icon(Icons.send),
-//                   onPressed: () {
-//                     final message = Message(
-//                       id: DateTime.now().toString(),
-//                       senderId: 'currentUser',
-//                       content: _messageController.text,
-//                       timestamp: Timestamp.now(), 
-//                       likes: {}, 
-//                       comments: [],
-//                     );
-//                     _firestoreService.addMessage(message);
-//                     _messageController.clear();
-//                   },
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
-

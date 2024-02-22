@@ -26,7 +26,7 @@ class Message {
   final String roomId;
   final String senderId;
   final List<String> recipients;
-  final String content;
+  String content;
   final Timestamp timestamp;
   final Map<String, int> likes;
   final List<Comment> comments;
